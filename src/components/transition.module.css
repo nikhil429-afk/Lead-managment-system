@@ -1,0 +1,102 @@
+/* ─────────────────────────────────────────────
+   transition.module.css
+   Import this in both login.tsx and register.tsx
+   alongside their own module.css
+───────────────────────────────────────────── */
+
+/* Card enters from the right (Register → Login) */
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(60px) scale(0.97);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Card enters from the left (Login → Register) */
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-60px) scale(0.97);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Card exits to the left (going to Register) */
+@keyframes slideOutToLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-60px) scale(0.97);
+    filter: blur(4px);
+  }
+}
+
+/* Card exits to the right (going to Login) */
+@keyframes slideOutToRight {
+  from {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(60px) scale(0.97);
+    filter: blur(4px);
+  }
+}
+
+/* ── Entry classes (applied on mount via CSS module) ── */
+.enterFromRight {
+  animation: slideInFromRight 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.enterFromLeft {
+  animation: slideInFromLeft 0.45s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* ── Exit classes (applied on link click before navigate) ── */
+.exitToLeft {
+  animation: slideOutToLeft 0.35s cubic-bezier(0.4, 0, 1, 1) both;
+  pointer-events: none;
+}
+
+.exitToRight {
+  animation: slideOutToRight 0.35s cubic-bezier(0.4, 0, 1, 1) both;
+  pointer-events: none;
+}
+
+/* ── Link ripple effect on click ── */
+.linkRipple {
+  position: relative;
+  overflow: hidden;
+}
+
+.linkRipple::before {
+  content: '';
+  position: absolute;
+  inset: -4px -8px;
+  border-radius: 8px;
+  background: rgba(21, 160, 220, 0.12);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.linkRipple:hover::before {
+  transform: scaleX(1);
+}
