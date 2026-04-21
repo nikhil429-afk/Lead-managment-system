@@ -20,6 +20,24 @@ interface ErrorData {
     general?: string;
 }
 
+const EyeIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6-10-6-10-6z"/> <circle cx="12" cy="12" r="2"/>
+  </svg>
+);
+
+const EyeOffIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6-10-6-10-6z"/> <circle cx="12" cy="12" r="2"/> <line x1="4" y1="4" x2="20" y2="20"/>
+  </svg>
+);
+
+const LockIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M6 11h12v9H6z"/> <path d="M8 11V7a4 4 0 0 1 8 0v4"/>
+  </svg>
+);
+
 function Register() {
     
     const [form, setForm] = useState<FormData>({
@@ -130,7 +148,7 @@ function Register() {
                     <input type={showPwd ? "text" : "password"} name="pwd" value={form.pwd} className={styles.input}
                         onChange={handleChange} placeholder="Min. 8 characters" />
                     <span className={styles.fieldIcon} onClick={() => setShowPwd(!showPwd)} >
-                        {showPwd ? "🫣" : "👁️"}
+                        {showPwd ? <EyeIcon /> : <EyeOffIcon />}
                     </span>
                     {error.pwd && ( <div className={styles.errMsg}>
                             <span className={styles.errDot}></span>
@@ -144,7 +162,7 @@ function Register() {
                     <input type={showConfPwd ? "text" : "password"} name="conf_pwd" value={form.conf_pwd} className={styles.input}
                         onChange={handleChange} placeholder="Re-Enter your password" />
                     <span className={styles.fieldIcon} onClick={() => setShowConfPwd(!showConfPwd)} >
-                        {showConfPwd ? "🫣" : "🔒"}
+                        {showConfPwd ? <EyeIcon /> : <LockIcon />}
                     </span>
 
                     {error.conf_pwd && (

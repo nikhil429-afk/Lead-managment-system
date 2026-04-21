@@ -60,6 +60,22 @@ const REPLY_TYPE_CONFIG: Record<string, { label: string; color: string; bg: stri
   reply:     { label: "Reply",     color: "#9a9b9b", bg: "rgba(148,163,184,0.08)", border: "rgba(148,163,184,0.15)" },
 };
 
+const SunIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="5"/>
+    <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+    <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+  </svg>
+);
+
+const MoonIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+  </svg>
+);
+
 const LeadsIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
     <circle cx="6" cy="6" r="2.5"/> <circle cx="12" cy="5.5" r="2.5"/> <circle cx="18" cy="6" r="2.5"/>
@@ -99,6 +115,7 @@ function Manager() {
   const navigate = useNavigate();
 
   const [activeSection, setActiveSection] = useState<"dashboard" | "leads">("dashboard");
+  const [isDark, setIsDark] = useState(true);
   const [, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string>("");
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -137,6 +154,10 @@ function Manager() {
   const [repliesLoading, setRepliesLoading] = useState(false);
   const [expandedLeadReplies, setExpandedLeadReplies] = useState<number | null>(null);
 
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") setIsDark(false);
+  }, []);
 
   useEffect(() => {
     const t = localStorage.getItem("manager_token");
@@ -345,7 +366,7 @@ function Manager() {
   const growth = prevMo > 0 ? (((lastMo - prevMo) / prevMo) * 100).toFixed(1) : "0";
 
   return (
-    <div className={styles.dashboard}>
+    <div className={`${styles.dashboard} ${isDark ? styles.dark : styles.light}`}>
       <aside className={styles.sidebar}>
         <h2 className={styles.logo}> Manager </h2>
         <ul>
@@ -364,7 +385,14 @@ function Manager() {
           <div className={styles.headerLeft}>
             <h1> Manager Dashboard </h1><p> Manage Leads </p>
           </div>
-          <button className={styles.refreshBtn} onClick={loadManager}> ↻ Refresh </button>
+          <div className={styles.headerActions}>
+            <button className={styles.refreshBtn} onClick={loadManager}> ↻ Refresh </button>
+            <button className={styles.themeToggle} onClick={() => setIsDark(prev => { const newTheme = !prev;
+              localStorage.setItem("theme", newTheme ? "dark" : "light"); return newTheme; })} title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}>
+                <span className={styles.themeTrack}><span className={`${styles.themeThumb} ${isDark ? styles.thumbRight : styles.thumbLeft}`} /></span>
+                <span className={styles.themeIcon}>{isDark ? <SunIcon /> : <MoonIcon />}</span>
+            </button>
+          </div>
         </div>
 
         {error && (

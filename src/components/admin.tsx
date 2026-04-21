@@ -59,8 +59,7 @@ type LeadStats = {
   converted: number;
   contacted: number;
   pending: number;
-};
-
+}; 
 
 type ChartPoint = { label: string; value: number };
 
@@ -69,6 +68,22 @@ const LEADS_API = "http://127.0.0.1:8000/leads";
 const token = () => localStorage.getItem("admin_token");
 
 const EMPTY_LEAD: LeadForm = { username: "", email: "", phone: "", company: "", source: "" };
+
+const SunIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="5"/>
+    <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+    <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+  </svg>
+);
+
+const MoonIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+  </svg>
+);
 
 const LeadsIcon = () => (
   <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -123,6 +138,7 @@ function Admin() {
   const navigate = useNavigate();
 
   const [activeSection, setActiveSection] = useState<"dashboard" | "users" | "leads">("dashboard");
+  const [isDark, setIsDark] = useState(true);
   const [usersData, setUsersData] = useState<User[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
   const [search, setSearch] = useState<string>("");
@@ -173,6 +189,11 @@ function Admin() {
   const [createUserSubmitting, setCreateUserSubmitting] = useState(false);
   const [createUserSuccess, setCreateUserSuccess] = useState("");
   const [createUserApiError, setCreateUserApiError] = useState("");
+
+  useEffect(() => {
+    const savedTheme = localStorage.getItem("theme");
+    if (savedTheme === "light") setIsDark(false);
+  }, []);
 
   useEffect(() => {
     if (dateRange[0] && dateRange[1]) {
@@ -456,7 +477,7 @@ function Admin() {
   const growth = prevMo > 0 ? (((lastMo - prevMo) / prevMo) * 100).toFixed(1) : "0";
 
   return (
-    <div className={styles.dashboard}>
+    <div className={`${styles.dashboard} ${isDark ? styles.dark : styles.light}`}>
       <aside className={styles.sidebar}>
         <h2 className={styles.logo}> Admin </h2>
         <ul>
@@ -476,12 +497,19 @@ function Admin() {
       <main className={styles.main}>
         <div className={styles.header}>
           <div className={styles.headerLeft}>
-            <h1> Admin Dashboard </h1><p> Manage Users, Roles & Permissions </p>
+            <h1> Admin Dashboard </h1><p> Manage Users, Roles & Permissions. </p>
           </div>
           <div className={styles.headerRight}>
             <center> <input className={styles.search} type="text" placeholder="Search users..."
               value={search} onChange={e => handleSearch(e.target.value)} /> </center>
               <button className={styles.refreshBtn} onClick={loadUsers}> ↻ Refresh </button>
+              <div className={styles.headerActions}>
+                <button className={styles.themeToggle} onClick={() => setIsDark(prev => { const newTheme = !prev;
+                localStorage.setItem("theme", newTheme ? "dark" : "light"); return newTheme; })} title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}>
+                  <span className={styles.themeTrack}><span className={`${styles.themeThumb} ${isDark ? styles.thumbRight : styles.thumbLeft}`} /></span>
+                  <span className={styles.themeIcon}>{isDark ? <SunIcon /> : <MoonIcon />}</span>
+                </button>
+              </div>
           </div>
         </div>
 
@@ -622,7 +650,7 @@ function Admin() {
                   </thead>
                   <tbody>
                     {leadsData.length === 0 ? (
-                      <tr><td colSpan={8} className={styles.emptyCell}> No Leads Found. Post Your First Lead! </td></tr>
+                      <tr><td colSpan={9} className={styles.emptyCell}> No Leads Found. Post Your First Lead! </td></tr>
                     ) : leadsData.map((lead, index) => (
                       <React.Fragment key={lead.id}>
                         <tr>
@@ -632,8 +660,7 @@ function Admin() {
                           <td className={styles.mutedCell}>{lead.phone}</td>
                           <td className={styles.lightCell}>{lead.company}</td>
                           <td className={styles.lightCell}>{lead.source}</td>
-                          <td>
-                            <span className={styles.replies} style={{
+                          <td className={styles.statusCell}> <span className={styles.replies} style={{
                               background: lead.status === "converted" ? "rgba(16,185,129,0.12)" : lead.status === "contacted" ? "rgba(59,130,246,0.12)" : "rgba(99,102,241,0.1)",
                               color: lead.status === "converted" ? "#34d399" : lead.status === "contacted" ? "#60a5fa" : "#818cf8",
                               border: `1px solid ${lead.status === "converted" ? "rgba(16,185,129,0.3)" : lead.status === "contacted" ? "rgba(59,130,246,0.3)" : "rgba(99,102,241,0.2)"}`,
@@ -644,7 +671,7 @@ function Admin() {
                             <button className={styles.editBtn} onClick={() => openEditLead(lead)}> Edit </button>
                             <button className={styles.deleteBtn} onClick={() => handleDeleteLead(lead)}> Delete </button>
                             <button onClick={() => setExpandedLeadReplies(expandedLeadReplies === lead.id ? null : lead.id)}
-                              className={expandedLeadReplies === lead.id ? styles.repliesBtnActive : styles.repliesBtn}> Replies 
+                              className={expandedLeadReplies === lead.id ? styles.repliesBtnActive : styles.repliesBtn }> Replies 
                             </button></div>
                           </td>
                         </tr>
@@ -742,14 +769,14 @@ function Admin() {
               <div className={styles.cardSub}> Lead Distribution By Current Status </div>
               <div className={styles.chartWrap}>
                 {statusChartData.length > 0 ? (
-                  <ResponsiveContainer width="70%" height="100%">
+                  <ResponsiveContainer width="90%" height="100%">
                     <BarChart data={statusChartData} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
                       <CartesianGrid stroke="rgba(0,0,0,0.04)" vertical={false} />
                       <XAxis dataKey="label" tick={{ fill: "#475569", fontSize: 11 }} axisLine={false} tickLine={false} />
                       <YAxis tick={{ fill: "#475569", fontSize: 10 }} axisLine={false} tickLine={false} allowDecimals={false} />
                       <Bar dataKey="value" radius={[6, 6, 0, 0]}>
                         {statusChartData.map((entry, i) => (
-                          <Cell key={i} fill={entry.label === "Converted" ? "#34d399" : entry.label === "Contacted" ? "#60a5fa" : entry.label === "New" ? "#818cf8" : "#f59e0b"} />
+                          <Cell key={i} fill={entry.label === "Total" ? "#00fbff" : entry.label === "Converted" ? "#34d399" : entry.label === "Contacted" ? "#60a5fa" : entry.label === "New" ? "#818cf8" : "#f59e0b" } />
                         ))}
                       </Bar>
                     </BarChart>
@@ -787,7 +814,7 @@ function Admin() {
                   <h3 className={styles.uploadModalTitle}> Upload File </h3>
                   <p className={styles.uploadModalSub}> Drag & Drop or Browse To Upload </p>
                 </div>
-                <button onClick={smoothCloseUploadModal} className={styles.modalCloseBtn}>×</button>
+                <button onClick={smoothCloseUploadModal} className={styles.modalCloseBtn}> ✕ </button>
               </div>
               <div onDragOver={e => { e.preventDefault(); setDragOver(true); }} onDragLeave={() => setDragOver(false)}
                 onDrop={handleDrop} onClick={() => fileInputRef.current?.click()} className={styles.dropZone}
