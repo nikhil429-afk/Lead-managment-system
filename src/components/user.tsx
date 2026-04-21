@@ -76,15 +76,9 @@ const FolderIcon = () => (
   </svg>
 );
 
-const SearchIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-  </svg>
-);
-
 const REPLY_TYPE_CONFIG: Record<string, { label: string; color: string; bg: string; border: string; btnBg: string }> = {
   converted: { label: "Mark Converted", color: "#34d399", bg: "rgba(16,185,129,0.1)",  border: "rgba(16,185,129,0.3)",  btnBg: "linear-gradient(135deg,#10b981,#059669)" },
-  contacted: { label: "Mark Contacted", color: "#60a5fa", bg: "rgba(59,130,246,0.1)",  border: "rgba(59,130,246,0.3)",  btnBg: "linear-gradient(135deg,#3b82f6,#2563eb)" },
+  contacted: { label: "Mark Contacted", color: "#287de5", bg: "rgba(59,130,246,0.1)",  border: "rgba(59,130,246,0.3)",  btnBg: "linear-gradient(135deg,#3b82f6,#2563eb)" },
   reply:     { label: "Add Reply",      color: "#94a3b8", bg: "rgba(148,163,184,0.08)", border: "rgba(148,163,184,0.2)", btnBg: "rgba(148,163,184,0.15)" },
 };
 
@@ -99,7 +93,7 @@ function UserReplyPanel({
     <div className={styles.replyPanelBody}>
       {replies.length > 0 && (
         <div className={styles.prevRepliesWrap}>
-          <div className={styles.prevRepliesLabel}>Previous Replies</div>
+          <div className={styles.prevRepliesLabel}> Previous Replies </div>
           {replies.map(r => { const cfg = typeConf[r.reply_type] || typeConf.reply;
 
             return (
@@ -108,7 +102,7 @@ function UserReplyPanel({
                   {cfg.label.replace("Mark ", "").replace("Add ", "")}
                 </span>
                 <div className={styles.prevReplyContent}>
-                  <div className={styles.prevReplyMsg}>{r.message || <div className={styles.prevReplyNoMsg}>No message</div>}</div>
+                  <div className={styles.prevReplyMsg}>{r.message || <div className={styles.prevReplyNoMsg}> No Messages </div>}</div>
                   <div className={styles.prevReplyDate}>{r.created_at}</div>
                 </div>
               </div>
@@ -118,13 +112,12 @@ function UserReplyPanel({
       )}
 
       <div className={styles.composeArea}>
-        <div className={styles.composeLabel}>Add Reply for {lead.username}</div>
+        <div className={styles.composeLabel}> Add Reply For {lead.username}</div>
         <textarea value={replyMessage} onChange={e => onMessageChange(e.target.value)} placeholder="Optional message or notes…" rows={2} className={styles.replyTextarea}/>
         {successMsg && (
           <div className={styles.replySuccess}> ✓ {successMsg}</div>
         )}
-        <div className={styles.replyBtnsRow}>
-          {(["converted", "contacted", "reply"] as const).map(type => {
+        <div className={styles.replyBtnsRow}> {(["converted", "contacted", "reply"] as const).map(type => {
             const cfg = typeConf[type];
             return ( <button key={type} disabled={submitting} onClick={() => onSubmit(lead.id, type)}
                 className={submitting ? styles.replyActionBtnDisabled : styles.replyActionBtn}
@@ -201,7 +194,7 @@ function User() {
       if (!res.ok) throw new Error();
       const data = await res.json();
       setLeadsData(data.leads || []);
-    } catch { setLeadsError("Unable to load leads. Please try again."); }
+    } catch { setLeadsError("Unable To Load Leads. Please Try Again."); }
     finally { setLeadsLoading(false); }
   };
 
@@ -235,7 +228,7 @@ function User() {
 
   const toggleReplyPanel = (leadId: number) => {
     if (expandedReplyLead === leadId) {
-      setExpandedReplyLead(null);
+      setExpandedReplyLead(null), 300;
     } else {
       setExpandedReplyLead(leadId);
       if (!leadReplies[leadId]) fetchLeadReplies(leadId);
@@ -258,13 +251,12 @@ function User() {
           {data.length > 0 && <span className={styles.dropdownBadge}>{data.length}</span>}
         </li>
         {data.length === 0 ? (
-          <li className={styles.dropdownEmpty}>No leads found</li>
+          <li className={styles.dropdownEmpty}> No Leads Found. </li>
         ) : (
           data.map((item) => (
             <li key={item.id} className={`${styles.dropdownItem} ${selectedId === item.id ? styles.dropdownItemActive : ""}`}
               onClick={() => onSelect(item)}>
-              <span className={styles.dropdownDot} />
-              {item.name}
+              <span className={styles.dropdownDot} /> {item.name}
             </li>
           ))
         )}
@@ -369,7 +361,7 @@ function User() {
       setEditRows(prev => { const n = prev.map(r => [...r]); n[ri][ci] = val; return n; });
     };
     const body = () => {
-      if (loading) return <p className={styles.previewLoading}>Loading...</p>;
+      if (loading) return <p className={styles.previewLoading}> Loading... </p>;
       if (isImage) return <img src={fileUrl} alt={lead.name} className={styles.previewImg} />;
       if (isPdf) return (<textarea className={styles.editTextarea} value={isEditing ? editText : (text ?? "")} onChange={e => isEditing && setEditText(e.target.value)} readOnly={!isEditing} rows={15} cols={154} />);
       if (isText) return isEditing ? <textarea className={styles.editTextarea} value={editText} onChange={e => setEditText(e.target.value)} rows={15} cols={154} /> : <pre className={styles.previewText}>{text}</pre>;
@@ -396,8 +388,8 @@ function User() {
       return (
         <div className={styles.previewDownload}>
           <span className={styles.fileIconLarge}>📄</span>
-          <p className={styles.previewUnsupported}>Preview not available for <strong>.{ext || "unknown"}</strong> files.</p>
-          <a href={fileUrl} download className={styles.downloadBtn}>⬇ Download {lead.name}</a>
+          <p className={styles.previewUnsupported}> Preview Not Available For <strong>.{ext || "unknown"}</strong> Files. </p>
+          <a href={fileUrl} download className={styles.downloadBtn}> ⬇ Download {lead.name}</a>
         </div>
       );
     };
@@ -406,16 +398,16 @@ function User() {
         <div className={styles.previewHeader}>
           <h2 className={styles.previewTitle}>{lead.name}</h2>
           <div className={styles.previewActions}>
-            {saveStatus === "saved" && <span className={styles.savedBadge}>Saved</span>}
-            {saveStatus === "error" && <span className={styles.errorBadge}>Save failed!</span>}
+            {saveStatus === "saved" && <span className={styles.savedBadge}> Saved </span>}
+            {saveStatus === "error" && <span className={styles.errorBadge}> Save Failed! </span>}
             {isEditable && !isEditing && <button className={styles.editBtn} onClick={handleEdit}>Edit</button>}
             {isEditing && (
               <div className={styles.editActions}>
                 <button className={styles.saveBtn} onClick={handleSave} disabled={saveStatus === "saving"}>{saveStatus === "saving" ? "Saving…" : "Save"}</button>
-                <button className={styles.cancelEditBtn} onClick={handleCancel}>Cancel</button>
+                <button className={styles.cancelEditBtn} onClick={handleCancel}> Cancel </button>
               </div>
             )}
-            <button className={styles.closeBtn} onClick={onClose}>×</button>
+            <button className={styles.closeBtn} onClick={onClose}> ✕ </button>
           </div>
         </div>
         <div className={styles.previewBody}>{body()}</div>
@@ -426,8 +418,8 @@ function User() {
   const LeadsTable: React.FC<{ data: DataItem[]; onClose: () => void; onView: (item: DataItem) => void }> = ({ data, onClose, onView }) => (
     <section className={styles.leadsTableSection}>
       <div className={styles.leadsTableHeader}>
-        <div className={styles.leadsTableTitle}><span>New Leads Documents</span></div>
-        <button className={styles.closeBtn} onClick={onClose} title="Close">×</button>
+        <div className={styles.leadsTableTitle}><span> New Leads Documents </span></div>
+        <button className={styles.closeBtn} onClick={onClose} title="Close"> ✕ </button>
       </div>
       <div className={styles.leadsTableScroll}>
         <table className={styles.leadsTable}>
@@ -438,7 +430,7 @@ function User() {
           </thead>
           <tbody>
             {data.length === 0 ? (
-              <tr><td colSpan={3} className={styles.leadsTableEmpty}>No leads available</td></tr>
+              <tr><td colSpan={3} className={styles.leadsTableEmpty}> No Leads Available! </td></tr>
             ) : data.map((item, idx) => (
               <tr key={item.id} className={styles.leadsTableRow}>
                 <td className={styles.leadsTableTd}><span className={styles.rowIndex}>{String(idx + 1).padStart(1, "0")}</span></td>
@@ -452,7 +444,7 @@ function User() {
     </section>
   );
 
-  const itemsPerPage = 10;
+  const itemsPerPage = 5;
   const dropdown = useRef<HTMLLIElement>(null);
 
   const Pagination: React.FC<PaginationProps> = ({ currentPage, totalPages, onPageChange }) => {
@@ -471,13 +463,13 @@ function User() {
     };
     return (
       <div className={styles.pagination}>
-        <button className={styles.pageNavBtn} onClick={() => handleClick(currentPage - 1)} disabled={currentPage === 1}>Prev.</button>
+        <button className={styles.pageNavBtn} onClick={() => handleClick(currentPage - 1)} disabled={currentPage === 1}> Prev. </button>
         {getPages().map((page, idx) => page === "..." ? (
           <span key={`sep-${idx}`} className={styles.pageSep}>···</span>
         ) : (
           <button key={page} className={`${styles.pageBtn} ${currentPage === page ? styles.pageBtnActive : ""}`} onClick={() => handleClick(page)} disabled={currentPage === page}>{page}</button>
         ))}
-        <button className={styles.pageNavBtn} onClick={() => handleClick(currentPage + 1)} disabled={currentPage === totalPages}>Next</button>
+        <button className={styles.pageNavBtn} onClick={() => handleClick(currentPage + 1)} disabled={currentPage === totalPages}> Next </button>
       </div>
     );
   };
@@ -538,16 +530,11 @@ function User() {
                 <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
               </svg>
             </div>
-            <span className={styles.logoText}>Leads Panel</span>
-          </div>
-
-          <div className={styles.searchWrap}>
-            <SearchIcon />
-            <input className={styles.searchInput} placeholder="Search...." />
+            <span className={styles.logoText}> Leads Panel </span>
           </div>
 
           <nav className={styles.nav}>
-            <p className={styles.navLabel}>MAIN MENU</p>
+            <p className={styles.navLabel}> MAIN MENU </p>
             <ul className={styles.navList}>
               <li className={`${styles.navItem} ${activeMenu === "dashboard" ? styles.active : ""}`} onClick={() => setActiveMenu("dashboard")}>
                 <span className={styles.navIcon}><DashboardIcon /></span> Dashboard
@@ -560,7 +547,7 @@ function User() {
               <li ref={dropdown} className={`${styles.leadsNavItem} ${activeMenu === "leads" ? styles.leadsNavItemActive : ""}`}>
                 <div className={`${styles.leadsRow} ${activeMenu === "leads" ? styles.leadsRowActive : ""}`} onClick={handleLeadsClick}>
                   <span className={styles.navIcon}><FolderIcon /></span>
-                  <span className={styles.leadsRowLabel}> Leads Document</span>
+                  <span className={styles.leadsRowLabel}> Leads Document </span>
                   {activeMenu === "leads" && <span className={styles.activePill} />}
                 </div>
                 {error && <div className={styles.leadsError}>{error}</div>}
@@ -583,14 +570,12 @@ function User() {
         <div className={styles.mainArea}>
           <header className={styles.header}>
             <div>
-              <h1 className={styles.headerTitle}>Leads Dashboard</h1>
-              <p className={styles.headerSub}>Measure your Leads here.</p>
+              <h1 className={styles.headerTitle}> Leads Dashboard </h1>
+              <p className={styles.headerSub}> Measure Your Leads Here </p>
             </div>
             <div className={styles.headerActions}>
               <button className={styles.themeToggle} onClick={() => setIsDark(!isDark)} title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}>
-                <span className={styles.themeTrack}>
-                  <span className={`${styles.themeThumb} ${isDark ? styles.thumbRight : styles.thumbLeft}`} />
-                </span>
+                <span className={styles.themeTrack}><span className={`${styles.themeThumb} ${isDark ? styles.thumbRight : styles.thumbLeft}`} /></span>
                 <span className={styles.themeIcon}>{isDark ? <SunIcon /> : <MoonIcon />}</span>
               </button>
             </div>
@@ -598,16 +583,16 @@ function User() {
 
           <main className={styles.main}>
             <section className={styles.statsGrid}>{[
-                { label: "Total Leads", value: totalLeads, color: "purple" },
-                { label: "New Leads",   value: newLeads,   color: "cyan" },
-                { label: "Converted",  value: converted,  color: "green" },
-                { label: "Pending",    value: pending,    color: "amber" },
-              ].map(({ label, value }) => (
+                { label: "Total Leads", value: totalLeads, color: "#c80bc8" },
+                { label: "New Leads",   value: newLeads, color: "#00c5c5" },
+                { label: "Converted",  value: converted, color: "#03a803" },
+                { label: "Pending",    value: pending, color: "#b00000" },
+              ].map(({ label, value, color }) => (
                 <article key={label} className={styles.statCard}>
                   <div className={styles.statTop}>
                     <span className={styles.statLabel}>{label}</span>
                   </div>
-                  <span className={styles.statMore}>{value}</span>
+                  <span className={styles.statMore}>{value}</span><span className={styles.statColor} style={{ backgroundColor: color }} />
                 </article>
               ))}
             </section>
@@ -615,9 +600,9 @@ function User() {
             {activeMenu === "New Leads" && (
               <div className={styles.leadsSection}>
                 <div className={styles.tablePanelHeader}>
-                  <span className={styles.tablePanelTitle}>All Leads</span>
+                  <span className={styles.tablePanelTitle}> All Leads </span>
                   <div className={styles.tablePanelActions}>
-                    <span className={styles.tableCount}>{leadsData.length} records</span>
+                    <span className={styles.tableCount}>{leadsData.length} Records </span>
                   </div>
                 </div>
 
@@ -632,12 +617,12 @@ function User() {
                     <table className={styles.table}>
                       <thead>
                         <tr>
-                          <th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Company</th><th>Source</th><th>Time</th><th>Reply</th>
+                          <th>ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Company</th><th>Source</th><th>Status</th><th>Time</th><th>Reply</th>
                         </tr>
                       </thead>
                       <tbody>
                         {leadsData.length === 0 ? (
-                          <tr><td colSpan={9} className={styles.emptyTableCell}> No leads found! </td></tr>
+                          <tr><td colSpan={9} className={styles.emptyTableCell}> No Leads Found! </td></tr>
                         ) : leadsData.map((lead, index) => (
                           <React.Fragment key={lead.id}>
                             <tr>
@@ -647,6 +632,12 @@ function User() {
                               <td className={styles.phoneTd}>{lead.phone}</td>
                               <td className={styles.companyTd}>{lead.company}</td>
                               <td className={styles.sourceTd}>{lead.source}</td>
+                              <td> <span className={styles.replies} style={{
+                                background: lead.status === "converted" ? "rgba(16,185,129,0.12)" : lead.status === "contacted" ? "rgba(59,130,246,0.12)" : "rgba(99,102,241,0.1)",
+                                color: lead.status === "converted" ? "#34d399" : lead.status === "contacted" ? "#60a5fa" : "#818cf8",
+                                border: `1px solid ${lead.status === "converted" ? "rgba(16,185,129,0.3)" : lead.status === "contacted" ? "rgba(59,130,246,0.3)" : "rgba(99,102,241,0.2)"}`,
+                                }}>{lead.status || "new"}</span>
+                              </td>
                               <td className={styles.dateTd}>{lead.created_at}</td>
                               <td>
                                 <button onClick={() => toggleReplyPanel(lead.id)} className={expandedReplyLead === lead.id ? styles.replyBtnOpen : styles.replyBtn}>
@@ -684,10 +675,10 @@ function User() {
             {showConfirm && (
               <div className={styles.modalOverlay}>
                 <div className={styles.modalBox}>
-                  <h3>Confirm Logout</h3><p>Are you sure? You Really Want To Logout?</p>
+                  <h3> Confirm Logout </h3><p> Are You Sure? You Really Want To Logout?</p>
                   <div className={styles.modalActions}>
                     <button onClick={() => { localStorage.removeItem("user_token"); localStorage.removeItem("user_user"); navigate("/login"); }} className={styles.confirmBtn}>Yes, Logout</button>
-                    <button onClick={() => setShowConfirm(false)} className={styles.cancelBtn}>Cancel</button>
+                    <button onClick={() => setShowConfirm(false)} className={styles.cancelBtn}> Cancel </button>
                   </div>
                 </div>
               </div>
